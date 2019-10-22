@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.MapReduceBase;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+
+public class WordCount
+{
+	public static class MyMap extends MapReduceBase implements Mapper<LongWritable,Text,Text,IntWritable>
+	{
+		Text mykey = new Text();
+		
+		public void map(LongWritable arg0, Text arg1, OutputCollector<Text, IntWritable> arg2, Reporter arg3) throws IOException 
+		{
+			String line = arg1.toString();
+			StringTokenizer tokenizer = new StringTokenizer(line);
+			
+			while(tokenizer.hasMoreTokens())
+			{
+				mykey.set(tokenizer.nextToken());
+				arg2.collect(mykey, new IntWritable(1));
+			}
+		}	
+	}
+	
+	public static class MyReduce extends MapReduceBase implements Reducer<Text, IntWritable, Text, IntWritable>
+	{
+		
+		public void reduce(Text arg0, Iterator<IntWritable> arg1, OutputCollector<Text, IntWritable> arg2, Reporter arg3) throws IOException 
+		{
+			
+			
+		}
+		
+	}
+	
+	public static void main(String[] args)
+	{
+		
+	}
+}

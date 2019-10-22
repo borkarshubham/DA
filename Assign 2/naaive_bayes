@@ -1,0 +1,82 @@
+import numpy as np
+import pandas as pd
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+
+# In[9]:
+
+
+data = pd.read_csv("diabetes.csv")
+
+
+# In[10]:
+
+
+data.head()
+
+
+# In[11]:
+
+X = data.iloc[:,:-1].values
+Y = data.iloc[:,-1].values
+
+# In[12]:
+
+class NaiveBayes:
+    
+    def fit(self,X,Y):
+        n_samples,n_features = X.shape
+        self._classes = np.unique(Y)
+        n_classes = len(self._classes)
+        
+        self._mean = np.zeros((n_classes,n_features),dtype=np.float64)
+        self._var = np.zeros((n_classes,n_features),dtype=np.float64)
+        self._prior = np.zeros(n_classes,dtype=np.float64)
+        
+        for c in self._classes:
+            Xc = X[Y==c]
+            self._mean[c,:] = Xc.mean(axis=0)
+            self._var[c,:] = Xc.var(axis=0)
+            self._prior[c] = Xc.shape[0]/float(n_samples)
+            
+    def predict(self,X):
+        ypred = [self._predict(x) for x in X]
+        return ypred
+    
+    def _predict(self,x):
+        posterious = []
+        
+        for indx,c in enumerate(self._classes):
+            p = np.log(self._prior[indx])
+            class_probablity = np.sum(np.log(self._pdf(indx,x)))
+            posterior = p + class_probablity
+            posterious.append(posterior)
+        return self._classes[np.argmax(posterious)]
+            
+    def _pdf(self,indx,x):
+        mean = self._mean[indx]
+        var = self._var[indx]
+        num = np.exp(-(x - mean)**2/(2*var))
+        den = np.sqrt(2 * np.pi * var )
+        return num/den
+
+
+# In[16]:
+train_x,test_x,train_y,test_y = train_test_split(X,Y,test_size = 0.2,random_state = 5)
+
+
+# In[17]:
+model = NaiveBayes()
+
+# In[18]:
+model.fit(train_x,train_y)
+
+# In[19]:
+y_pred=model.predict(test_x)
+
+
+# In[20]:
+print("accuracy : ",np.sum(y_pred==test_y)/len(test_y))
+
+# In[23]:
+print(confusion_matrix(test_y,y_pred))

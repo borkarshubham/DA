@@ -1,0 +1,83 @@
+#my
+
+import pandas as pd
+import sklearn.model_selection as train_test_split
+import sklearn.metrics as confusion matrix
+import sklearn.naive_bayes as GaussianNB
+
+df = pd.read_csv("filename.csv");
+
+df = df.drop(labels=[],axis = 1);
+
+df.describe()
+
+target_data = [df]
+data_mapper = {"Member" : 1,"Casual" : 0};
+for data in target_data:
+	data["Member type"] = data["Member type"].map(data_mapper)
+
+
+target = df["Member Type"];
+df = df.drop(labels=["Member Type"],axis = 1);
+
+X_train,Y_train,X_Test,Y_Test = train_test_split(df,target,test_size = 0.3,randam_state=5);
+
+model = GaussianNB();
+
+model.fit(X_train,Y_train);
+
+predict = model.predict(X_test);
+
+confusion_matrix(Y_test,predict);
+
+==============================================
+
+import glob
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.naive_bayes import GaussianNB
+
+path = "./"
+data = []
+all_files = glob.glob(path+"/*.csv")
+for filename in all_files:
+    frame = pd.read_csv(filename,index_col=None, header=0)
+    data.append(frame)
+    
+df = pd.concat(data,axis=0,ignore_index=True)
+
+df.head()
+
+df.shape
+
+df = df.drop(labels=['Start station','End station','Start date','End date','Bike number'],axis=1)
+
+df.head()
+
+df.isna().any()
+
+target_data = [df]
+target_map = {'Member':1,'Casual':0}
+for data in target_data:
+    data["Member type"] = data["Member type"].map(target_map)
+
+df.head(10)
+
+df.dtypes
+
+target = df['Member type']
+df = df.drop(labels=['Member type'],axis=1)
+
+X_train,X_test,Y_train,Y_test = train_test_split(df,target,test_size=0.3,random_state=True)
+
+model = GaussianNB()
+
+model.fit(X_train,Y_train)
+
+pred = model.predict(X_test)
+
+confusion_matrix(Y_test,pred)
+
+model.score(X_test,Y_test)
+
